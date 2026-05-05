@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DataCraft by Pratap – Microsoft Certified BI & Data Engineering</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #080c18;
+    --paper: #f4f3f0;
+    --accent: #2563eb;
+    --accent2: #7c3aed;
+    --glow: #38bdf8;
+    --warm: #f59e0b;
+    --muted: #6b7280;
+    --border: rgba(8,12,24,0.1);
+    --card-bg: #ffffff;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'DM Mono', monospace; background: var(--paper); color: var(--ink); overflow-x: hidden; cursor: none; }
+
+  /* CURSOR */
+  .cursor { width: 10px; height: 10px; background: var(--accent); border-radius: 50%; position: fixed; top:0;left:0; pointer-events:none; z-index:9999; }
+  .cursor-ring { width: 36px; height: 36px; border: 1.5px solid var(--accent); border-radius:50%; position:fixed; top:0;left:0; pointer-events:none; z-index:9998; transition: width .3s,height .3s,border-color .3s; opacity:.7; }
+  .cursor-ring.big { width:56px; height:56px; border-color: var(--accent2); }
+
+  /* NAV */
+  nav {
+    position: fixed; top:0;left:0;right:0; z-index:100;
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 18px 52px;
+    background: rgba(244,243,240,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    transition: box-shadow .3s;
+  }
+  .nav-logo { display:flex; align-items:center; gap:12px; font-family:'Syne',sans-serif; font-weight:800; font-size:1.05rem; letter-spacing:-.02em; color:var(--ink); text-decoration:none; }
+  .logo-mark { width:34px; height:34px; border-radius:9px; background: linear-gradient(135deg, var(--accent), var(--accent2)); display:flex; align-items:center; justify-content:center; font-size:.85rem; color:#fff; font-weight:700; }
+  .logo-sub { font-size:.6rem; letter-spacing:.15em; text-transform:uppercase; color:var(--muted); font-weight:400; display:block; line-height:1; }
+  .nav-links { display:flex; gap:32px; list-style:none; }
+  .nav-links a { font-size:.72rem; letter-spacing:.1em; text-transform:uppercase; text-decoration:none; color:var(--ink); opacity:.55; transition:opacity .2s; }
+  .nav-links a:hover { opacity:1; }
+  .nav-cert { display:flex; align-items:center; gap:8px; font-size:.62rem; letter-spacing:.08em; text-transform:uppercase; background: linear-gradient(135deg,var(--accent),var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; border: 1px solid rgba(37,99,235,.3); border-radius:100px; padding: 8px 18px; }
+  .nav-cta { background: var(--ink); color: var(--paper); padding: 10px 22px; border-radius:100px; font-size:.72rem; letter-spacing:.07em; text-transform:uppercase; text-decoration:none; transition:all .25s; margin-left:8px; }
+  .nav-cta:hover { background: var(--accent); transform:translateY(-1px); }
+
+  /* HERO */
+  .hero { min-height:100vh; display:grid; grid-template-columns:1fr 1fr; position:relative; overflow:hidden; }
+  .hero-left { padding:150px 52px 80px; display:flex; flex-direction:column; justify-content:center; }
+  .hero-eyebrow { display:inline-flex; align-items:center; gap:10px; font-size:.65rem; letter-spacing:.18em; text-transform:uppercase; color: var(--accent); margin-bottom:30px; border: 1px solid rgba(37,99,235,.25); border-radius:100px; padding: 7px 16px; width:fit-content; background: rgba(37,99,235,.06); }
+  .hero-eyebrow .dot { width:6px;height:6px;background:var(--accent);border-radius:50%;animation:blink 1.4s ease infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.2} }
+  h1 { font-family:'Syne',sans-serif; font-weight:800; font-size: clamp(2.8rem,5.5vw,5rem); line-height:.95; letter-spacing:-.04em; margin-bottom:28px; }
+  h1 em { font-family:'Instrument Serif',serif; font-style:italic; font-weight:400; color:var(--accent); }
+  .hero-sub { font-size:.85rem; line-height:1.9; color:var(--muted); max-width:420px; margin-bottom:36px; }
+  .cert-badges { display:flex; gap:12px; margin-bottom:40px; flex-wrap:wrap; }
+  .cert-badge { display:flex; align-items:center; gap:8px; font-size:.6rem; letter-spacing:.08em; text-transform:uppercase; border: 1px solid var(--border); border-radius:8px; padding:10px 14px; background:var(--card-bg); }
+  .cert-badge .icon { font-size:1rem; }
+  .cert-badge strong { color:var(--ink); }
+  .cert-badge span { color:var(--muted); }
+  .hero-actions { display:flex; gap:14px; align-items:center; flex-wrap:wrap; }
+  .btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent2)); color:#fff; padding:15px 32px; border-radius:100px; font-family:'DM Mono',monospace; font-size:.78rem; letter-spacing:.06em; text-decoration:none; display:inline-flex; align-items:center; gap:10px; transition:all .3s; border:none; cursor:none; box-shadow: 0 8px 32px rgba(37,99,235,.3); }
+  .btn-primary:hover { transform:translateY(-3px); box-shadow:0 16px 40px rgba(37,99,235,.4); }
+  .btn-ghost { color:var(--ink); font-size:.78rem; letter-spacing:.06em; text-decoration:none; display:inline-flex; align-items:center; gap:8px; border:1px solid var(--border); border-radius:100px; padding:15px 24px; transition:all .25s; }
+  .btn-ghost:hover { border-color:var(--accent); color:var(--accent); }
+  .hero-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:0; margin-top:52px; border-top:1px solid var(--border); padding-top:32px; }
+  .stat { padding-right:24px; }
+  .stat+.stat { padding-left:24px; border-left:1px solid var(--border); }
+  .stat-num { font-family:'Syne',sans-serif; font-size:2.4rem; font-weight:800; letter-spacing:-.04em; line-height:1; }
+  .stat-num em { color:var(--accent); font-style:normal; }
+  .stat-label { font-size:.62rem; color:var(--muted); letter-spacing:.1em; text-transform:uppercase; margin-top:5px; }
+
+  /* HERO RIGHT */
+  .hero-right { background:var(--ink); position:relative; overflow:hidden; }
+  .hero-grid-bg { position:absolute; inset:0; background-image: linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px), linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px); background-size:48px 48px; }
+  .hero-glow { position:absolute; width:400px;height:400px; border-radius:50%; background:radial-gradient(circle, rgba(37,99,235,.22), transparent 70%); top:50%;left:50%;transform:translate(-50%,-50%); }
+  .hero-viz { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; padding:56px 44px; }
+  .dash-preview { width:100%; max-width:460px; }
+  .dash-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; }
+  .dash-title { font-family:'Syne',sans-serif; font-weight:700; font-size:.9rem; color:#fff; }
+  .dash-live { font-size:.6rem; letter-spacing:.12em; text-transform:uppercase; color:#22d3ee; display:flex; align-items:center; gap:6px; }
+  .dash-live::before { content:''; width:6px;height:6px;border-radius:50%;background:#22d3ee;animation:blink 1.2s infinite; }
+  .kpi-row { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:12px; }
+  .kpi { background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.08); border-radius:10px; padding:13px; }
+  .kpi-label { font-size:.55rem; color:rgba(255,255,255,.4); letter-spacing:.1em; text-transform:uppercase; margin-bottom:5px; }
+  .kpi-val { font-family:'Syne',sans-serif; font-weight:700; font-size:1.25rem; color:#fff; letter-spacing:-.02em; }
+  .kpi-delta { font-size:.6rem; margin-top:3px; }
+  .kpi-delta.up { color:#34d399; }
+  .chart-area { background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.07); border-radius:12px; padding:16px; margin-bottom:12px; }
+  .chart-label { font-size:.56rem; color:rgba(255,255,255,.35); letter-spacing:.1em; text-transform:uppercase; margin-bottom:12px; }
+  .bars { display:flex; align-items:flex-end; gap:7px; height:90px; }
+  .b { flex:1; border-radius:4px 4px 0 0; animation:grow 1s cubic-bezier(.34,1.5,.64,1) forwards; transform-origin:bottom; opacity:0; }
+  @keyframes grow { from{transform:scaleY(0);opacity:0} to{transform:scaleY(1);opacity:1} }
+  .b.a { background:linear-gradient(to top,#2563eb,#60a5fa); }
+  .b.b2 { background:linear-gradient(to top,#7c3aed,#a78bfa); }
+  .b.c { background:rgba(255,255,255,.1); }
+  .pipeline-area { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .pipe-card { background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.08); border-radius:10px; padding:13px; }
+  .pipe-title { font-size:.56rem; color:rgba(255,255,255,.4); letter-spacing:.1em; text-transform:uppercase; margin-bottom:9px; }
+  .pipe-row { display:flex; align-items:center; gap:8px; margin-bottom:7px; }
+  .pipe-dot { width:6px;height:6px;border-radius:50%;flex-shrink:0; }
+  .pipe-dot.green { background:#34d399; } .pipe-dot.blue { background:#60a5fa; } .pipe-dot.purple { background:#a78bfa; } .pipe-dot.yellow { background:#fbbf24; }
+  .pipe-text { font-size:.6rem; color:rgba(255,255,255,.5); flex:1; }
+  .pipe-status { font-size:.54rem; letter-spacing:.06em; text-transform:uppercase; }
+  .pipe-status.ok { color:#34d399; } .pipe-status.run { color:#fbbf24; }
+
+  /* TICKER */
+  .ticker { background:var(--ink); padding:12px 0; overflow:hidden; white-space:nowrap; border-top:2px solid var(--accent); border-bottom:2px solid var(--accent); }
+  .ticker-inner { display:inline-flex; animation:ticker 32s linear infinite; }
+  .ticker-item { font-size:.65rem; letter-spacing:.12em; text-transform:uppercase; padding:0 36px; color:rgba(255,255,255,.5); display:flex; align-items:center; gap:14px; }
+  .ticker-item::after { content:'◆'; color:var(--accent); font-size:.4rem; }
+  @keyframes ticker { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+  /* SECTIONS */
+  .section { padding:110px 52px; }
+  .section-tag { font-size:.65rem; letter-spacing:.18em; text-transform:uppercase; color:var(--accent); margin-bottom:16px; display:flex; align-items:center; gap:10px; }
+  .section-tag::before { content:''; display:inline-block; width:20px;height:1.5px;background:var(--accent); }
+  h2 { font-family:'Syne',sans-serif; font-size:clamp(2.2rem,3.8vw,3.4rem); font-weight:800; letter-spacing:-.04em; line-height:1; max-width:640px; }
+  h2 em { font-family:'Instrument Serif',serif; font-style:italic; font-weight:400; }
+  .section-header { margin-bottom:64px; display:flex; justify-content:space-between; align-items:flex-end; gap:40px; }
+  .section-header-right { font-size:.78rem; color:var(--muted); line-height:1.8; max-width:340px; flex-shrink:0; }
+
+  /* SERVICES BENTO */
+  .services-bento { display:grid; grid-template-columns:repeat(12,1fr); gap:2px; background:var(--border); }
+  .sc { background:var(--card-bg); padding:44px 40px; position:relative; overflow:hidden; transition:all .35s; cursor:none; }
+  .sc::after { content:''; position:absolute; bottom:0;left:0;right:0; height:3px; background:linear-gradient(to right,var(--accent),var(--accent2)); transform:scaleX(0); transform-origin:left; transition:transform .4s; }
+  .sc:hover::after { transform:scaleX(1); }
+  .sc:hover { background:var(--ink); }
+  .sc:hover .sc-num { color:rgba(255,255,255,.04); }
+  .sc:hover .sc-title { color:#fff; }
+  .sc:hover .sc-desc { color:rgba(255,255,255,.45); }
+  .sc:hover .sc-icon { border-color:rgba(255,255,255,.12); }
+  .sc:hover .stag { border-color:rgba(255,255,255,.12); color:rgba(255,255,255,.4); }
+  .sc-1 { grid-column:span 5; }
+  .sc-2 { grid-column:span 7; display:grid; grid-template-columns:1fr 1fr; gap:44px; align-items:center; }
+  .sc-3,.sc-4,.sc-5 { grid-column:span 4; }
+  .sc-6,.sc-7,.sc-8,.sc-9 { grid-column:span 3; }
+  .sc-num { font-family:'Syne',sans-serif; font-weight:800; font-size:3.5rem; color:rgba(8,12,24,.05); position:absolute; top:20px;right:24px; letter-spacing:-.04em; line-height:1; transition:color .35s; }
+  .sc-icon { width:48px;height:48px; border:1.5px solid var(--border); border-radius:11px; display:flex; align-items:center; justify-content:center; font-size:1.3rem; margin-bottom:22px; transition:all .35s; }
+  .sc-title { font-family:'Syne',sans-serif; font-size:1.1rem; font-weight:700; letter-spacing:-.02em; margin-bottom:12px; transition:color .35s; }
+  .sc-desc { font-size:.77rem; line-height:1.85; color:var(--muted); transition:color .35s; }
+  .sc-tags { display:flex; flex-wrap:wrap; gap:7px; margin-top:20px; }
+  .stag { font-size:.6rem; letter-spacing:.07em; text-transform:uppercase; padding:5px 11px; border-radius:100px; border:1px solid var(--border); color:var(--muted); transition:all .35s; }
+  /* featured dark card */
+  .sc-feat { background:var(--ink) !important; }
+  .sc-feat .sc-num { color:rgba(255,255,255,.04) !important; }
+  .sc-feat .sc-title { color:#fff !important; }
+  .sc-feat .sc-desc { color:rgba(255,255,255,.45) !important; }
+  .sc-feat .sc-icon { border-color:rgba(255,255,255,.12) !important; }
+  .sc-feat .stag { border-color:rgba(255,255,255,.12) !important; color:rgba(255,255,255,.4) !important; }
+  .sc-feat::after { background:linear-gradient(to right,var(--glow),var(--accent)) !important; transform:scaleX(1) !important; }
+  /* inline fv viz */
+  .fv { display:flex; flex-direction:column; gap:9px; }
+  .fv-row { display:flex; align-items:center; gap:10px; }
+  .fv-lbl { font-size:.6rem; color:rgba(255,255,255,.4); width:76px; flex-shrink:0; text-align:right; }
+  .fv-outer { flex:1; height:5px; background:rgba(255,255,255,.07); border-radius:100px; overflow:hidden; }
+  .fv-inner { height:100%; border-radius:100px; background:linear-gradient(to right,var(--accent),var(--accent2)); animation:barFill 1.5s cubic-bezier(.34,1.2,.64,1) forwards; transform-origin:left; }
+  @keyframes barFill { from{transform:scaleX(0)} to{transform:scaleX(1)} }
+  .fv-pct { font-size:.65rem; color:rgba(255,255,255,.5); width:30px; }
+
+  /* TECH STACK */
+  .tech-section { background:var(--ink); }
+  .tech-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:1px; background:rgba(255,255,255,.07); margin-top:60px; }
+  .tech-item { background:var(--ink); padding:26px 16px; text-align:center; transition:background .3s; cursor:none; }
+  .tech-item:hover { background:rgba(37,99,235,.12); }
+  .tech-emoji { font-size:1.8rem; margin-bottom:10px; }
+  .tech-name { font-size:.56rem; letter-spacing:.08em; text-transform:uppercase; color:rgba(255,255,255,.35); }
+  .tech-item:hover .tech-name { color:var(--glow); }
+
+  /* TIMELINE */
+  .timeline { margin-top:60px; }
+  .tl-item { display:grid; grid-template-columns:200px 1fr; gap:48px; padding:36px 0; border-top:1px solid var(--border); }
+  .tl-item:last-child { border-bottom:1px solid var(--border); }
+  .tl-period { font-size:.62rem; letter-spacing:.1em; text-transform:uppercase; color:var(--accent); margin-bottom:8px; }
+  .tl-company { font-family:'Syne',sans-serif; font-size:.95rem; font-weight:700; letter-spacing:-.02em; }
+  .tl-role { font-size:.72rem; color:var(--muted); margin-top:4px; }
+  .tl-location { font-size:.62rem; color:var(--muted); margin-top:3px; }
+  .tl-content h3 { font-family:'Syne',sans-serif; font-size:1rem; font-weight:700; letter-spacing:-.02em; margin-bottom:10px; }
+  .tl-content p { font-size:.78rem; line-height:1.85; color:var(--muted); margin-bottom:14px; }
+  .tl-tags { display:flex; flex-wrap:wrap; gap:7px; }
+
+  /* CERTIFICATIONS */
+  .cert-section { background:linear-gradient(135deg, var(--accent), var(--accent2)); padding:80px 52px; }
+  .cert-inner { display:flex; align-items:center; justify-content:space-between; gap:40px; flex-wrap:wrap; }
+  .cert-text h2 { color:#fff; max-width:480px; }
+  .cert-text p { color:rgba(255,255,255,.65); font-size:.82rem; line-height:1.8; margin-top:16px; max-width:420px; }
+  .cert-cards { display:flex; gap:16px; }
+  .cert-card { background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.2); border-radius:16px; padding:24px 28px; text-align:center; min-width:180px; }
+  .cert-card-icon { font-size:2rem; margin-bottom:12px; }
+  .cert-card-title { font-family:'Syne',sans-serif; font-weight:700; font-size:.85rem; color:#fff; margin-bottom:4px; }
+  .cert-card-sub { font-size:.6rem; letter-spacing:.1em; text-transform:uppercase; color:rgba(255,255,255,.55); }
+
+  /* CONTACT */
+  .contact-section { background:var(--ink); color:var(--paper); padding:110px 52px; position:relative; overflow:hidden; }
+  .contact-bg { position:absolute; font-family:'Syne',sans-serif; font-weight:800; font-size:22vw; color:rgba(255,255,255,.025); top:50%;left:50%; transform:translate(-50%,-50%); white-space:nowrap; pointer-events:none; letter-spacing:-.05em; }
+  .contact-grid { display:grid; grid-template-columns:1fr 1fr; gap:80px; position:relative; z-index:1; }
+  .contact-left .section-tag { color:var(--glow); }
+  .contact-left .section-tag::before { background:var(--glow); }
+  .contact-left h2 { color:#fff; }
+  .contact-left h2 em { color:var(--glow); font-style:italic; }
+  .contact-left p { font-size:.82rem; line-height:1.85; color:rgba(255,255,255,.45); margin-top:24px; }
+  .contact-info { margin-top:40px; display:flex; flex-direction:column; gap:16px; }
+  .ci-row { display:flex; align-items:center; gap:14px; font-size:.8rem; color:rgba(255,255,255,.6); }
+  .ci-icon { width:36px;height:36px; border:1px solid rgba(255,255,255,.12); border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:.9rem; flex-shrink:0; }
+  .contact-form { display:flex; flex-direction:column; gap:14px; }
+  label { font-size:.6rem; letter-spacing:.12em; text-transform:uppercase; color:rgba(255,255,255,.35); margin-bottom:4px; display:block; }
+  input,textarea,select { background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1); border-radius:10px; padding:13px 16px; font-family:'DM Mono',monospace; font-size:.8rem; color:#fff; outline:none; transition:border-color .2s; width:100%; }
+  input::placeholder,textarea::placeholder { color:rgba(255,255,255,.25); }
+  input:focus,textarea:focus,select:focus { border-color:var(--accent); }
+  textarea { height:110px; resize:none; }
+  select { color:rgba(255,255,255,.6); }
+  select option { background:var(--ink); }
+  .form-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .submit-btn { background:linear-gradient(135deg,var(--accent),var(--accent2)); color:#fff; border:none; border-radius:100px; padding:16px 40px; font-family:'DM Mono',monospace; font-size:.8rem; letter-spacing:.07em; text-transform:uppercase; cursor:none; transition:all .3s; box-shadow:0 8px 32px rgba(37,99,235,.35); margin-top:4px; width:100%; }
+  .submit-btn:hover { transform:translateY(-2px); box-shadow:0 16px 40px rgba(37,99,235,.5); }
+
+  /* FOOTER */
+  footer { background:#04060f; padding:40px 52px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px; }
+  .footer-logo { font-family:'Syne',sans-serif; font-weight:800; font-size:1.2rem; color:rgba(255,255,255,.7); letter-spacing:-.02em; }
+  .footer-logo em { background:linear-gradient(135deg,var(--accent),var(--accent2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; font-style:normal; }
+  .footer-links { display:flex; gap:28px; }
+  .footer-links a { font-size:.65rem; color:rgba(255,255,255,.3); text-decoration:none; letter-spacing:.07em; text-transform:uppercase; transition:color .2s; }
+  .footer-links a:hover { color:var(--accent); }
+  .footer-right { font-size:.65rem; color:rgba(255,255,255,.25); letter-spacing:.06em; }
+
+  /* REVEAL */
+  .reveal { opacity:0; transform:translateY(28px); transition:opacity .7s ease,transform .7s ease; }
+  .reveal.visible { opacity:1; transform:translateY(0); }
+  .reveal-delay-1 { transition-delay:.1s; }
+  .reveal-delay-2 { transition-delay:.2s; }
+  .reveal-delay-3 { transition-delay:.3s; }
+
+  @media(max-width:960px) {
+    nav { padding:16px 24px; }
+    .nav-links,.nav-cert { display:none; }
+    .hero { grid-template-columns:1fr; }
+    .hero-right { height:360px; }
+    .hero-left { padding:120px 24px 60px; }
+    .section { padding:72px 24px; }
+    .services-bento { grid-template-columns:1fr; }
+    .sc-1,.sc-2,.sc-3,.sc-4,.sc-5,.sc-6,.sc-7,.sc-8,.sc-9 { grid-column:span 1; }
+    .sc-2 { grid-template-columns:1fr; }
+    .tech-grid { grid-template-columns:repeat(4,1fr); }
+    .tl-item { grid-template-columns:1fr; gap:12px; }
+    .cert-inner { flex-direction:column; }
+    .cert-cards { flex-direction:column; width:100%; }
+    .contact-grid { grid-template-columns:1fr; gap:48px; }
+    .form-row { grid-template-columns:1fr; }
+    .hero-stats { grid-template-columns:1fr; gap:20px; }
+    .stat+.stat { padding-left:0; border-left:none; border-top:1px solid var(--border); padding-top:20px; }
+    .section-header { flex-direction:column; align-items:flex-start; gap:16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#" class="nav-logo">
+    <div class="logo-mark">DC</div>
+    <div>DataCraft <span class="logo-sub">by Pratap</span></div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#services">Services</a></li>
+    <li><a href="#tech">Stack</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#certifications">Certifications</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div style="display:flex;align-items:center;gap:10px">
+    <div class="nav-cert">🏅 2× Microsoft Certified</div>
+    <a href="#contact" class="nav-cta">Hire Me →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="hero-left">
+    <div class="hero-eyebrow"><span class="dot"></span> Available for Projects · Abu Dhabi, UAE</div>
+    <h1>Enterprise Data,<br><em>Beautifully</em><br>Engineered</h1>
+    <p class="hero-sub">7+ years delivering end-to-end BI & Data Engineering solutions across Azure, Microsoft Fabric, Power BI, and enterprise ERP ecosystems. From raw pipelines to boardroom dashboards.</p>
+    <div class="cert-badges">
+      <div class="cert-badge"><span class="icon">🏅</span><div><strong>PL-300</strong><br><span>Power BI Data Analyst</span></div></div>
+      <div class="cert-badge"><span class="icon">🏅</span><div><strong>DP-600</strong><br><span>Fabric Analytics Engineer</span></div></div>
+    </div>
+    <div class="hero-actions">
+      <a href="#contact" class="btn-primary">Start a Project →</a>
+      <a href="#experience" class="btn-ghost">View Experience</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-num">7<em>+</em></div><div class="stat-label">Years Experience</div></div>
+      <div class="stat"><div class="stat-num">7<em>+</em></div><div class="stat-label">Major Clients</div></div>
+      <div class="stat"><div class="stat-num">2<em>×</em></div><div class="stat-label">MS Certified</div></div>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-grid-bg"></div>
+    <div class="hero-glow"></div>
+    <div class="hero-viz">
+      <div class="dash-preview">
+        <div class="dash-header">
+          <div class="dash-title">Executive BI Dashboard</div>
+          <div class="dash-live">Live · Fabric Warehouse</div>
+        </div>
+        <div class="kpi-row">
+          <div class="kpi"><div class="kpi-label">Revenue</div><div class="kpi-val">$4.2M</div><div class="kpi-delta up">↑ 18.4%</div></div>
+          <div class="kpi"><div class="kpi-label">Pipeline SLA</div><div class="kpi-val">99.8%</div><div class="kpi-delta up">↑ On Track</div></div>
+          <div class="kpi"><div class="kpi-label">Data Records</div><div class="kpi-val">84M</div><div class="kpi-delta up">↑ Synced</div></div>
+        </div>
+        <div class="chart-area">
+          <div class="chart-label">Quarterly Pipeline Runs · ADF + Fabric</div>
+          <div class="bars">
+            <div class="b a" style="height:68%;animation-delay:.15s"></div>
+            <div class="b b2" style="height:52%;animation-delay:.25s"></div>
+            <div class="b a" style="height:82%;animation-delay:.35s"></div>
+            <div class="b c" style="height:44%;animation-delay:.45s"></div>
+            <div class="b b2" style="height:90%;animation-delay:.55s"></div>
+            <div class="b a" style="height:75%;animation-delay:.65s"></div>
+            <div class="b b2" style="height:60%;animation-delay:.75s"></div>
+            <div class="b a" style="height:95%;animation-delay:.85s"></div>
+          </div>
+        </div>
+        <div class="pipeline-area">
+          <div class="pipe-card">
+            <div class="pipe-title">Active Sources</div>
+            <div class="pipe-row"><div class="pipe-dot green"></div><div class="pipe-text">D365 ERP / CRM</div><div class="pipe-status ok">Live</div></div>
+            <div class="pipe-row"><div class="pipe-dot blue"></div><div class="pipe-text">Oracle Unifier</div><div class="pipe-status ok">Live</div></div>
+            <div class="pipe-row"><div class="pipe-dot yellow"></div><div class="pipe-text">Joget / CAFM</div><div class="pipe-status run">Syncing</div></div>
+            <div class="pipe-row"><div class="pipe-dot purple"></div><div class="pipe-text">REST APIs</div><div class="pipe-status ok">Live</div></div>
+          </div>
+          <div class="pipe-card">
+            <div class="pipe-title">Security Model</div>
+            <div class="pipe-row"><div class="pipe-dot green"></div><div class="pipe-text">Row-Level Security</div><div class="pipe-status ok">On</div></div>
+            <div class="pipe-row"><div class="pipe-dot blue"></div><div class="pipe-text">Role-Based Access</div><div class="pipe-status ok">On</div></div>
+            <div class="pipe-row"><div class="pipe-dot green"></div><div class="pipe-text">IIS Web Embed</div><div class="pipe-status ok">Active</div></div>
+            <div class="pipe-row"><div class="pipe-dot purple"></div><div class="pipe-text">Gateway</div><div class="pipe-status ok">Running</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-inner">
+    <span class="ticker-item">Azure Data Factory</span><span class="ticker-item">Microsoft Fabric</span><span class="ticker-item">Power BI · PL-300</span><span class="ticker-item">Fabric Analytics · DP-600</span><span class="ticker-item">Dynamics 365 ERP/CRM</span><span class="ticker-item">Azure Synapse Analytics</span><span class="ticker-item">SSIS / MSBI</span><span class="ticker-item">Snowflake DW</span><span class="ticker-item">Python & PySpark</span><span class="ticker-item">IIS Web Embedding</span><span class="ticker-item">Power Automate</span><span class="ticker-item">Data Activator</span><span class="ticker-item">SSAS / AAS Tabular</span><span class="ticker-item">Informatica ICS</span><span class="ticker-item">Oracle Unifier</span><span class="ticker-item">Row-Level Security</span>
+    <span class="ticker-item">Azure Data Factory</span><span class="ticker-item">Microsoft Fabric</span><span class="ticker-item">Power BI · PL-300</span><span class="ticker-item">Fabric Analytics · DP-600</span><span class="ticker-item">Dynamics 365 ERP/CRM</span><span class="ticker-item">Azure Synapse Analytics</span><span class="ticker-item">SSIS / MSBI</span><span class="ticker-item">Snowflake DW</span><span class="ticker-item">Python & PySpark</span><span class="ticker-item">IIS Web Embedding</span><span class="ticker-item">Power Automate</span><span class="ticker-item">Data Activator</span><span class="ticker-item">SSAS / AAS Tabular</span><span class="ticker-item">Informatica ICS</span><span class="ticker-item">Oracle Unifier</span><span class="ticker-item">Row-Level Security</span>
+  </div>
+</div>
+
+<!-- SERVICES -->
+<section class="section" id="services">
+  <div class="section-header reveal">
+    <div>
+      <div class="section-tag">What I Build</div>
+      <h2>9 Specialized <em>Services</em></h2>
+    </div>
+    <div class="section-header-right">Every engagement backed by 7+ years of hands-on delivery across investments, real estate, insurance, HR, healthcare, and government sectors.</div>
+  </div>
+
+  <div class="services-bento">
+    <!-- S1 Power BI -->
+    <div class="sc sc-1 reveal">
+      <div class="sc-num">01</div>
+      <div class="sc-icon">📊</div>
+      <div class="sc-title">Power BI Dashboards & Data Insights</div>
+      <p class="sc-desc">Interactive, executive-grade dashboards with advanced DAX (Aggregation, Time Intelligence, Filter, Logical), paginated reports, bookmarks, hierarchies, and automated email subscriptions. Delivered for Finance, HR, Procurement, Operations, and employee KPI scorecards at Damac, Mubadala, and Wusoom.</p>
+      <div class="sc-tags"><span class="stag">Power BI</span><span class="stag">DAX</span><span class="stag">Paginated Reports</span><span class="stag">SSRS</span><span class="stag">Power Query</span><span class="stag">Bookmarks</span></div>
+    </div>
+
+    <!-- S2 Data Warehouse — featured dark -->
+    <div class="sc sc-2 sc-feat reveal reveal-delay-1">
+      <div>
+        <div class="sc-num">02</div>
+        <div class="sc-icon">🗄️</div>
+        <div class="sc-title">Data Warehouse Design</div>
+        <p class="sc-desc">Scalable Star & Snowflake schemas on Azure Synapse, Microsoft Fabric Warehouse, Fabric Lakehouse, SQL Server, and Snowflake. Data Marts, SCD types, replication, and normalization optimized for enterprise-scale analytics.</p>
+        <div class="sc-tags"><span class="stag">Azure Synapse</span><span class="stag">Fabric Warehouse</span><span class="stag">Snowflake</span><span class="stag">SQL Server</span><span class="stag">Star Schema</span></div>
+      </div>
+      <div class="fv">
+        <div class="fv-row"><div class="fv-lbl">D365 ERP</div><div class="fv-outer"><div class="fv-inner" style="width:95%"></div></div><div class="fv-pct">95%</div></div>
+        <div class="fv-row"><div class="fv-lbl">Salesforce</div><div class="fv-outer"><div class="fv-inner" style="width:80%;animation-delay:.1s"></div></div><div class="fv-pct">80%</div></div>
+        <div class="fv-row"><div class="fv-lbl">Oracle</div><div class="fv-outer"><div class="fv-inner" style="width:75%;animation-delay:.2s"></div></div><div class="fv-pct">75%</div></div>
+        <div class="fv-row"><div class="fv-lbl">Joget/CAFM</div><div class="fv-outer"><div class="fv-inner" style="width:70%;animation-delay:.3s"></div></div><div class="fv-pct">70%</div></div>
+        <div class="fv-row"><div class="fv-lbl">SharePoint</div><div class="fv-outer"><div class="fv-inner" style="width:85%;animation-delay:.4s"></div></div><div class="fv-pct">85%</div></div>
+        <div class="fv-row"><div class="fv-lbl">REST APIs</div><div class="fv-outer"><div class="fv-inner" style="width:92%;animation-delay:.5s"></div></div><div class="fv-pct">92%</div></div>
+      </div>
+    </div>
+
+    <!-- S3 Cloud Migration -->
+    <div class="sc sc-3 reveal">
+      <div class="sc-num">03</div>
+      <div class="sc-icon">☁️</div>
+      <div class="sc-title">Cloud Migration</div>
+      <p class="sc-desc">On-premises to Azure cloud migration — D365 ERP/CRM, HPSM → ServiceNow, and Pentana → K10 Vision. Full data mapping, transformation validation, warehouse realignment, and BI report continuity with zero data loss.</p>
+      <div class="sc-tags"><span class="stag">ADF</span><span class="stag">Azure Data Lake</span><span class="stag">D365</span><span class="stag">ServiceNow</span><span class="stag">K10 Vision</span></div>
+    </div>
+
+    <!-- S4 IIS -->
+    <div class="sc sc-4 reveal reveal-delay-1">
+      <div class="sc-num">04</div>
+      <div class="sc-icon">🌐</div>
+      <div class="sc-title">IIS Web Embedding</div>
+      <p class="sc-desc">Configure and maintain Internet Information Services (IIS) to embed Power BI dashboards into enterprise web portals — with secure access, seamless report integration, and enhanced user interactivity. Live at Wusoom Holding.</p>
+      <div class="sc-tags"><span class="stag">IIS</span><span class="stag">Power BI Embed</span><span class="stag">Enterprise Portal</span><span class="stag">Secure Access</span></div>
+    </div>
+
+    <!-- S5 API Integration -->
+    <div class="sc sc-5 reveal reveal-delay-2">
+      <div class="sc-num">05</div>
+      <div class="sc-icon">🔗</div>
+      <div class="sc-title">API Integration & Web Scraping</div>
+      <p class="sc-desc">Extract data from Web APIs and live sources using Python, PySpark, PowerShell, and Postman. Convert to JSON and Delta Tables. Automate full extraction pipelines and store into Fabric OneLake or Azure Data Lake — as delivered for HRA Abu Dhabi.</p>
+      <div class="sc-tags"><span class="stag">Python</span><span class="stag">PySpark</span><span class="stag">PowerShell</span><span class="stag">Postman</span><span class="stag">Delta Tables</span></div>
+    </div>
+
+    <!-- S6 Power Automate -->
+    <div class="sc sc-6 reveal">
+      <div class="sc-num">06</div>
+      <div class="sc-icon">⚡</div>
+      <div class="sc-title">Power Automate & Alerts</div>
+      <p class="sc-desc">Automate daily, weekly, monthly, and quarterly reports. Conditional PO notifications, employee KPI scorecards, and investment status emails using Power Automate and Data Activator with HTML/CSS email templates.</p>
+      <div class="sc-tags"><span class="stag">Power Automate</span><span class="stag">Data Activator</span><span class="stag">Subscriptions</span><span class="stag">Alerts</span></div>
+    </div>
+
+    <!-- S7 SSAS -->
+    <div class="sc sc-7 reveal reveal-delay-1">
+      <div class="sc-num">07</div>
+      <div class="sc-icon">📐</div>
+      <div class="sc-title">SSAS / Semantic Models</div>
+      <p class="sc-desc">Design and maintain Tabular Semantic Datasets, SSAS, and AAS cubes. Live connection from Power BI Desktop to SSAS/AAS for high-performance analytical reporting at scale.</p>
+      <div class="sc-tags"><span class="stag">SSAS Tabular</span><span class="stag">AAS</span><span class="stag">Semantic Model</span><span class="stag">OLAP</span></div>
+    </div>
+
+    <!-- S8 Data Governance -->
+    <div class="sc sc-8 reveal reveal-delay-2">
+      <div class="sc-num">08</div>
+      <div class="sc-icon">🔒</div>
+      <div class="sc-title">Data Governance & RLS/RBS</div>
+      <p class="sc-desc">Row-Level and Role-Based Security using DAX expressions. Workspace access management, Power BI audit logs, Gateway connections, and automated Power BI Data Dictionary maintenance via Python and APIs.</p>
+      <div class="sc-tags"><span class="stag">RLS / RBS</span><span class="stag">DAX Roles</span><span class="stag">Audit Logs</span><span class="stag">Gateway</span></div>
+    </div>
+
+    <!-- S9 SQL -->
+    <div class="sc sc-9 reveal reveal-delay-3">
+      <div class="sc-num">09</div>
+      <div class="sc-icon">🚀</div>
+      <div class="sc-title">SQL Performance Tuning</div>
+      <p class="sc-desc">Stored procedures, views, indexes, fragmentation analysis, and data normalization. SQL Jobs, Windows Task Scheduler, SSIS package scheduling, and PySpark code for high-throughput data integration.</p>
+      <div class="sc-tags"><span class="stag">Indexes</span><span class="stag">Stored Procs</span><span class="stag">SQL Jobs</span><span class="stag">SSIS</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- TECH STACK -->
+<section class="section tech-section" id="tech">
+  <div class="section-header reveal">
+    <div>
+      <div class="section-tag" style="color:var(--glow)">Full Stack</div>
+      <h2 style="color:#fff">Technology <em>Arsenal</em></h2>
+    </div>
+    <div class="section-header-right" style="color:rgba(255,255,255,.4)">Battle-tested across investments, real estate, government, insurance, finance, and operations — every tool earned through real delivery.</div>
+  </div>
+  <div class="tech-grid reveal">
+    <div class="tech-item"><div class="tech-emoji">🧵</div><div class="tech-name">Microsoft Fabric</div></div>
+    <div class="tech-item"><div class="tech-emoji">🔷</div><div class="tech-name">Azure Data Factory</div></div>
+    <div class="tech-item"><div class="tech-emoji">📊</div><div class="tech-name">Power BI</div></div>
+    <div class="tech-item"><div class="tech-emoji">🔵</div><div class="tech-name">Azure Synapse</div></div>
+    <div class="tech-item"><div class="tech-emoji">❄️</div><div class="tech-name">Snowflake</div></div>
+    <div class="tech-item"><div class="tech-emoji">⚙️</div><div class="tech-name">SSIS / MSBI</div></div>
+    <div class="tech-item"><div class="tech-emoji">💾</div><div class="tech-name">SQL Server</div></div>
+    <div class="tech-item"><div class="tech-emoji">🏢</div><div class="tech-name">Dynamics 365</div></div>
+    <div class="tech-item"><div class="tech-emoji">🔶</div><div class="tech-name">Oracle / Unifier</div></div>
+    <div class="tech-item"><div class="tech-emoji">🐍</div><div class="tech-name">Python / PySpark</div></div>
+    <div class="tech-item"><div class="tech-emoji">⚡</div><div class="tech-name">Power Automate</div></div>
+    <div class="tech-item"><div class="tech-emoji">🌐</div><div class="tech-name">IIS Embedding</div></div>
+    <div class="tech-item"><div class="tech-emoji">🔗</div><div class="tech-name">REST APIs</div></div>
+    <div class="tech-item"><div class="tech-emoji">📐</div><div class="tech-name">SSAS / AAS</div></div>
+    <div class="tech-item"><div class="tech-emoji">🔔</div><div class="tech-name">Data Activator</div></div>
+    <div class="tech-item"><div class="tech-emoji">📋</div><div class="tech-name">Informatica ICS</div></div>
+    <div class="tech-item"><div class="tech-emoji">🏗️</div><div class="tech-name">Fabric Lakehouse</div></div>
+    <div class="tech-item"><div class="tech-emoji">📬</div><div class="tech-name">Postman</div></div>
+    <div class="tech-item"><div class="tech-emoji">🛡️</div><div class="tech-name">PowerShell</div></div>
+    <div class="tech-item"><div class="tech-emoji">☁️</div><div class="tech-name">Azure SQL DB</div></div>
+    <div class="tech-item"><div class="tech-emoji">🧩</div><div class="tech-name">Salesforce CRM</div></div>
+  </div>
+</section>
+
+<!-- EXPERIENCE TIMELINE -->
+<section class="section" id="experience">
+  <div class="section-header reveal">
+    <div>
+      <div class="section-tag">Career</div>
+      <h2>Project <em>Experience</em></h2>
+    </div>
+    <div class="section-header-right">Enterprise BI solutions delivered across Abu Dhabi, Dubai, and Hyderabad — spanning investments, real estate, government, insurance, and operations.</div>
+  </div>
+  <div class="timeline reveal">
+
+    <div class="tl-item">
+      <div class="tl-meta">
+        <div class="tl-period">Jan 2025 – Present</div>
+        <div class="tl-company">Wusoom Holding</div>
+        <div class="tl-role">BI Specialist · Tech Evolution</div>
+        <div class="tl-location">📍 Abu Dhabi, UAE</div>
+      </div>
+      <div class="tl-content">
+        <h3>Finance, HR, CAFM & Investment BI · IIS Portal Embedding</h3>
+        <p>Integrated D365 ERP, CAFM, Joget, Oracle Unifier, and SharePoint into Fabric OneLake Warehouse. Delivered Finance, Procurement, and HR dashboards tracking revenue, collections, intercompany fund flows, payroll, attrition, and investment performance. Configured IIS for Power BI enterprise web portal embedding. Automated weekly investment and PO notifications via Power Automate.</p>
+        <div class="tl-tags"><span class="stag">Microsoft Fabric</span><span class="stag">D365</span><span class="stag">IIS</span><span class="stag">Oracle Unifier</span><span class="stag">Power Automate</span><span class="stag">CAFM</span><span class="stag">Joget</span></div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-meta">
+        <div class="tl-period">Apr 2024 – Dec 2024</div>
+        <div class="tl-company">Damac Properties</div>
+        <div class="tl-role">BI Consultant · Paraminfo</div>
+        <div class="tl-location">📍 Dubai, UAE</div>
+      </div>
+      <div class="tl-content">
+        <h3>Employee KPI Dashboards · CRM · Call Center Analytics</h3>
+        <p>Transformed data from Salesforce, Genesys, and Monday Board into Fabric OneLake Warehouse. Developed KPI dashboards tracking Utilization, SLA Compliance, Quality Evaluations, and CSAT Scores. Automated dynamic KPI scorecard emails via Fabric Flows and implemented Paginated Reports with daily Excel auto-distribution to team leaders. Maintained Power BI Data Dictionary via Python and APIs.</p>
+        <div class="tl-tags"><span class="stag">Azure Synapse</span><span class="stag">Fabric</span><span class="stag">Salesforce</span><span class="stag">Genesys</span><span class="stag">Data Activator</span><span class="stag">Python</span></div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-meta">
+        <div class="tl-period">Aug 2022 – Mar 2024</div>
+        <div class="tl-company">Mubadala Investment</div>
+        <div class="tl-role">Consultant IA Analyst · Tech Mahindra</div>
+        <div class="tl-location">📍 Abu Dhabi, UAE</div>
+      </div>
+      <div class="tl-content">
+        <h3>Enterprise BI · Cloud Migration · Internal Audit · IT Infra</h3>
+        <p>Led end-to-end BI for Digital Operations, Internal Auditing, CRM, ERP, and HR teams. Managed CRM on-prem to cloud migration, Pentana → K10 Vision, and HPSM → ServiceNow transitions. Extracted API data via PowerShell & Python into warehouse via SSIS. Implemented Paginated Reports and full Power BI admin — audit logs, gateways, and workspace access.</p>
+        <div class="tl-tags"><span class="stag">MSBI / SSIS</span><span class="stag">Power BI</span><span class="stag">PowerShell</span><span class="stag">Python</span><span class="stag">Cloud Migration</span><span class="stag">RLS</span></div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-meta">
+        <div class="tl-period">Feb 2023 – Dec 2023</div>
+        <div class="tl-company">Human Resource Authority</div>
+        <div class="tl-role">Data Engineer · Abu Dhabi Gov.</div>
+        <div class="tl-location">📍 Abu Dhabi, UAE</div>
+      </div>
+      <div class="tl-content">
+        <h3>Jobseeker Data Platform · API Extraction · Web Scraping</h3>
+        <p>Extracted and integrated jobseeker, vacancy, and company data from TakAfo systems via web scraping and APIs. Automated Python scripts for JSON extraction and SSIS pipeline orchestration. Built SQL stored procedures for JSON-to-table transformation and reporting views for Power BI and external applications.</p>
+        <div class="tl-tags"><span class="stag">Python</span><span class="stag">SSIS</span><span class="stag">Postman</span><span class="stag">Web Scraping</span><span class="stag">SQL Server</span><span class="stag">SQL Jobs</span></div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-meta">
+        <div class="tl-period">Jun 2021 – Nov 2021</div>
+        <div class="tl-company">Hastings Insurance</div>
+        <div class="tl-role">Sr. Power BI Developer · Accenture</div>
+        <div class="tl-location">📍 Hyderabad, India</div>
+      </div>
+      <div class="tl-content">
+        <h3>Operational & Revenue Dashboards · Snowflake DW</h3>
+        <p>Designed operational dashboards tracking Total Insurance Coverage, Revenue, User Renewals, and Revenue Forecasts on Snowflake. Created wireframes, implemented advanced DAX (Time Intelligence, Aggregation, Filter), and managed the full Power BI delivery lifecycle from data modelling to production migration.</p>
+        <div class="tl-tags"><span class="stag">Power BI</span><span class="stag">Snowflake</span><span class="stag">DAX</span><span class="stag">Office 365</span></div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-meta">
+        <div class="tl-period">Aug 2018 – Apr 2021</div>
+        <div class="tl-company">Kiwla · Aahari Corp</div>
+        <div class="tl-role">Software / Application Engineer</div>
+        <div class="tl-location">📍 Hyderabad, India</div>
+      </div>
+      <div class="tl-content">
+        <h3>MSBI · SSAS Cubes · Operations & Sales Dashboards</h3>
+        <p>Created and maintained Power BI dashboards for Operations, Sales, Warehousing, and HR. Ensured SSIS integrations and SSAS cube reliability. Live connection from Power BI Desktop to SSAS cubes. Built Card, Bar, Pie, Filled Map, Table, Matrix, and Line Chart visualizations for multi-department reporting.</p>
+        <div class="tl-tags"><span class="stag">SSAS</span><span class="stag">SSIS</span><span class="stag">Power BI</span><span class="stag">SQL Server</span><span class="stag">Excel</span></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- CERTIFICATIONS -->
+<section class="cert-section" id="certifications">
+  <div class="cert-inner">
+    <div class="cert-text">
+      <div class="section-tag" style="color:rgba(255,255,255,.7)">Credentials</div>
+      <h2 style="color:#fff;max-width:500px">2× Microsoft <span style="font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;color:rgba(255,255,255,.75)">Certified</span></h2>
+      <p>Holding two active Microsoft certifications covering the full modern analytics and engineering stack — from Power BI reporting to Fabric data pipelines.</p>
+    </div>
+    <div class="cert-cards">
+      <div class="cert-card">
+        <div class="cert-card-icon">🏅</div>
+        <div class="cert-card-title">Power BI Data Analyst</div>
+        <div class="cert-card-sub">Microsoft Certified · PL-300</div>
+      </div>
+      <div class="cert-card">
+        <div class="cert-card-icon">🏅</div>
+        <div class="cert-card-title">Fabric Analytics Engineer</div>
+        <div class="cert-card-sub">Microsoft Certified · DP-600</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact-section" id="contact">
+  <div class="contact-bg">DATA</div>
+  <div class="contact-grid">
+    <div class="contact-left">
+      <div class="section-tag">Get In Touch</div>
+      <h2>Let's Build Your <em>Data Platform</em></h2>
+      <p>Whether it's a Power BI dashboard, an end-to-end Fabric pipeline, a cloud migration, or IIS web portal embedding — I deliver complete, enterprise-grade BI solutions tailored to your business.</p>
+      <div class="contact-info">
+        <div class="ci-row"><div class="ci-icon">📧</div>saipratapbillu@gmail.com</div>
+        <div class="ci-row"><div class="ci-icon">📞</div>+971 586 773 403</div>
+        <div class="ci-row"><div class="ci-icon">📍</div>Abu Dhabi, UAE · Open to Remote</div>
+        <div class="ci-row"><div class="ci-icon">🕐</div>Sun – Thu · 09:00 – 17:00 GST</div>
+      </div>
+    </div>
+    <div>
+      <form class="contact-form" onsubmit="handleSubmit(event)">
+        <div class="form-row">
+          <div><label>Your Name</label><input type="text" placeholder="Ahmed Al Mansoori" required></div>
+          <div><label>Email</label><input type="email" placeholder="ahmed@company.com" required></div>
+        </div>
+        <div><label>Company / Organization</label><input type="text" placeholder="Your company name"></div>
+        <div>
+          <label>Service Needed</label>
+          <select>
+            <option value="">Select a service...</option>
+            <option>Power BI Dashboards & Data Insights</option>
+            <option>Data Warehouse Design</option>
+            <option>Cloud Migration (On-prem to Azure)</option>
+            <option>IIS Web Portal Embedding</option>
+            <option>API Integration & Web Scraping</option>
+            <option>Power Automate & Alerts</option>
+            <option>SSAS / Semantic Models</option>
+            <option>Data Governance & RLS/RBS Security</option>
+            <option>SQL Performance Tuning</option>
+            <option>Full End-to-End BI Project</option>
+          </select>
+        </div>
+        <div><label>Project Description</label><textarea placeholder="Tell me about your data challenges, current systems (ERP, CRM, etc.), and what you want to achieve..."></textarea></div>
+        <button type="submit" class="submit-btn">Send Message →</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo"><em>DataCraft</em> by Pratap</div>
+  <div class="footer-links">
+    <a href="#services">Services</a>
+    <a href="#tech">Stack</a>
+    <a href="#experience">Experience</a>
+    <a href="#contact">Contact</a>
+  </div>
+  <div class="footer-right">© 2026 Vemanasai Pratap Billu · All rights reserved</div>
+</footer>
+
+<script>
+  // Cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx=0,my=0,rx=0,ry=0;
+  document.addEventListener('mousemove', e => {
+    mx=e.clientX; my=e.clientY;
+    cursor.style.transform = `translate(${mx-5}px,${my-5}px)`;
+  });
+  (function animRing(){
+    rx += (mx-rx-18)*.1;
+    ry += (my-ry-18)*.1;
+    ring.style.transform = `translate(${rx}px,${ry}px)`;
+    requestAnimationFrame(animRing);
+  })();
+  document.querySelectorAll('a,button,.sc,.tech-item,.tl-item').forEach(el=>{
+    el.addEventListener('mouseenter',()=>ring.classList.add('big'));
+    el.addEventListener('mouseleave',()=>ring.classList.remove('big'));
+  });
+
+  // Scroll reveal
+  const io = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); });
+  },{threshold:0.07});
+  document.querySelectorAll('.reveal').forEach(r=>io.observe(r));
+
+  // Nav shadow
+  window.addEventListener('scroll',()=>{
+    document.getElementById('nav').style.boxShadow = window.scrollY>60 ? '0 4px 32px rgba(8,12,24,.08)' : 'none';
+  });
+
+  // Form submit
+  function handleSubmit(e){
+    e.preventDefault();
+    const btn = e.target.querySelector('.submit-btn');
+    btn.textContent = "✓ Sent! Pratap will be in touch soon.";
+    btn.style.background = 'linear-gradient(135deg,#059669,#10b981)';
+    setTimeout(()=>{ btn.textContent = 'Send Message →'; btn.style.background=''; }, 4500);
+  }
+</script>
+</body>
+</html>
